@@ -1,32 +1,18 @@
 import {
-    MessageBody,
-    SubscribeMessage,
-    WebSocketGateway,
-    WebSocketServer,
-    WsResponse,
+  SubscribeMessage,
+  WebSocketGateway,
+  MessageBody,
+  WebSocketServer,
 } from '@nestjs/websockets';
-import { from, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { Server } from 'socket.io';
 
-@WebSocketGateway({
-    cors: {
-        origin: '*',
-    },
-})
+@WebSocketGateway(8001, { cors: '*' })
 export class ChatGateway {
-    @WebSocketServer()
-    server: Server
+  @WebSocketServer()
+  server;
 
-    @SubscribeMessage('events')
-    findAll(@MessageBody() data: any): Observable<WsResponse<string>> {
-        return from(['Hello','How are you']).pipe(
-            map((x) => ({event: 'events', data: x}))
-        )
-    }
-
-    @SubscribeMessage('identity')
-    async identity(@MessageBody() data: string): Promise<string> {
-        return data
-    }
+  @SubscribeMessage('message')
+  handleMessage(@MessageBody() message: string): void {
+    console.log(message);
+    this.server.emit('message', message);
+  }
 }
