@@ -14,7 +14,7 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly profilesService: ProfilesService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
   ) {}
 
   async login({ email, password }: CreateSessionDto) {
@@ -23,7 +23,7 @@ export class AuthService {
     const profile = await this.profilesService.findByEmail(email);
 
     if (!profile) {
-      this.logger.error({ method: 'login', message: 'invalid E-mail'});
+      this.logger.error({ method: 'login', message: 'invalid E-mail' });
 
       throw new UnauthorizedException('E-mail or password does not match');
     }
@@ -31,7 +31,7 @@ export class AuthService {
     const passwordIsValid = await bcrypt.compare(password, profile.password);
 
     if (!passwordIsValid) {
-      this.logger.error({ method: 'login', message: 'invalid password'});
+      this.logger.error({ method: 'login', message: 'invalid password' });
 
       throw new UnauthorizedException('E-mail or password does not match');
     }
@@ -43,13 +43,12 @@ export class AuthService {
     const accessToken = this.jwtService.sign({
       id: profile.id,
       email: profile.email,
-      type: profile?.type
+      type: profile?.type,
     });
 
-    
     return {
       access_token: accessToken,
-      profile
+      profile,
     };
   }
 
@@ -65,7 +64,7 @@ export class AuthService {
 
   public async getUserFromAuthenticationToken(token: string) {
     const payload: IPayloadValidate = this.jwtService.verify(token, {
-      secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET')
+      secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
     });
     if (payload.id) {
       return this.profilesService.findOne(payload.id);

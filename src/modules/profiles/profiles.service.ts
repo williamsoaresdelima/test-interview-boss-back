@@ -23,8 +23,12 @@ export class ProfilesService {
 
     await this.profileRepository.save(profile);
 
-    this.logger.log({ method: 'create', data: profile, message: 'profile created' });
-    
+    this.logger.log({
+      method: 'create',
+      data: profile,
+      message: 'profile created',
+    });
+
     delete profile.password;
 
     return profile;
@@ -36,11 +40,11 @@ export class ProfilesService {
     };
 
     if (type === ProfileTypeEnum.RECRUITER) {
-      where.type = ProfileTypeEnum.RECRUITER
+      where.type = ProfileTypeEnum.RECRUITER;
     } else if (type === ProfileTypeEnum.CANDIDATE) {
-      where.type = ProfileTypeEnum.CANDIDATE
+      where.type = ProfileTypeEnum.CANDIDATE;
     } else {
-      delete where.type
+      delete where.type;
     }
 
     return this.profileRepository.find({
@@ -52,7 +56,7 @@ export class ProfilesService {
         email: true,
         description: true,
         phone_number: true,
-      }
+      },
     });
   }
 
@@ -66,7 +70,11 @@ export class ProfilesService {
     });
 
     if (!profile) {
-      this.logger.error({ method: 'findOne', id_received: id, message: 'profile not found' });
+      this.logger.error({
+        method: 'findOne',
+        id_received: id,
+        message: 'profile not found',
+      });
 
       throw new NotFoundException('Profile Not Found');
     }
@@ -80,10 +88,13 @@ export class ProfilesService {
     const profile = await this.profileRepository.findOne({
       where: {
         email,
-      }
+      },
     });
 
-    this.logger.log({ method: 'findByEmail', profile_is_found: !!profile ? 'FOUND' : 'NOT FOUND' });
+    this.logger.log({
+      method: 'findByEmail',
+      profile_is_found: !!profile ? 'FOUND' : 'NOT FOUND',
+    });
 
     return profile;
   }

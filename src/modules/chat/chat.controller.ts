@@ -1,6 +1,6 @@
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ChatService } from './chat.service';
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, Request, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('Chat')
@@ -9,6 +9,12 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 @Controller('chat')
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
+
+  @Get('/messages')
+  findAllMessages(@Query() query: any, @Request() req: any) {
+    const otherProfile = query.otherProfile;
+    return this.chatService.findAllMessages(req.user.profileId, otherProfile);
+  }
 
   @Get('/messages/sent')
   findAllSentMessages(@Request() req: any) {

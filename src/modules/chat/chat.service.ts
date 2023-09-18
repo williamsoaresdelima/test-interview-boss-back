@@ -14,8 +14,7 @@ export class ChatService {
 
   constructor(
     @InjectRepository(Message)
-    private messageRepository: Repository<Message>,
-    // private authService: AuthService
+    private messageRepository: Repository<Message>, // private authService: AuthService
   ) {}
 
   async create(createMessageDto: CreateMessageDto) {
@@ -25,7 +24,11 @@ export class ChatService {
 
     await this.messageRepository.save(newMessage);
 
-    this.logger.log({ method: 'create', data: newMessage, message: 'message created' });
+    this.logger.log({
+      method: 'create',
+      data: newMessage,
+      message: 'message created',
+    });
 
     return newMessage;
   }
@@ -35,9 +38,9 @@ export class ChatService {
 
     return this.messageRepository.find({
       where: {
-        sender_id: profile_id
+        sender_id: profile_id,
       },
-      relations: ['sender']
+      relations: ['sender'],
     });
   }
 
@@ -46,8 +49,26 @@ export class ChatService {
 
     return this.messageRepository.find({
       where: {
-        recipient_id: profile_id
-      }
+        recipient_id: profile_id,
+      },
+    });
+  }
+
+  findAllMessages(profile_id: number, otherProfile: number) {
+    this.logger.log({ profile_id, message: 'profile_id of sender' });
+
+    return this.messageRepository.find({
+      where: [
+        {
+          sender_id: profile_id,
+          recipient_id: otherProfile,
+        },
+        {
+          sender_id: otherProfile,
+          recipient_id: profile_id,
+        },
+      ],
+      relations: ['sender'],
     });
   }
 }
