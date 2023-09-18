@@ -1,8 +1,6 @@
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
-import { setupSwagger } from './shared/utils/setup-swagger';
-import { HttpExceptionFilter } from './shared/filters/http-exception.filter';
 import { ClassSerializerInterceptor, Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 
 async function bootstrap() {
@@ -14,16 +12,12 @@ async function bootstrap() {
 
   const PORT = configService.get('PORT') || 3000;
 
-  const API_URL = configService.get('API_URL');
-
   app.enableCors();
 
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: '1',
   });
-
-  app.useGlobalFilters(new HttpExceptionFilter());
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -34,8 +28,6 @@ async function bootstrap() {
   );
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-
-  setupSwagger(app, API_URL);
 
   await app.listen(PORT);
 
